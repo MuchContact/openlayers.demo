@@ -1,0 +1,11 @@
+.map {
+  position: absolute;
+  width: 70%;
+  bottom: 20px;
+  top: 0px;
+  margin-left: 30%;
+}
+.controlPanel {
+  float: left;
+  width: 30%;
+}
