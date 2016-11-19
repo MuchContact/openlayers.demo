@@ -10,19 +10,11 @@
   </head>
   <body>
     <div id="controlPanel" class="controlPanel">
-      <form class="form-inline">
-        <label>Geometry type &nbsp;</label>
-        <select id="type">
-          <option value="Point">Point</option>
-          <option value="LineString">LineString</option>
-          <option value="Polygon">Polygon</option>
-          <option value="Circle">Circle</option>
-          <option value="None">None</option>
-        </select>
-      </form>
+      <input type="button" value="画点" onclick="drawPoint()"></input>
+      <input type="button" value="画线" onclick="drawLine()"></input>
+      <input type="button" value="画面" onclick="drawPolygon()"></input>
     </div>
-    <div id="map" class="map">
-    </div>
+    <div id="map" class="map"></div>
 
     <script>
       var raster = new ol.layer.Tile({
@@ -44,30 +36,34 @@
         })
       });
 
-      var typeSelect = document.getElementById('type');
-
       var draw; // global so we can remove it later
-      function addInteraction() {
-        var value = typeSelect.value;
+      function addInteraction(value) {
         if (value !== 'None') {
           draw = new ol.interaction.Draw({
             source: source,
-            type: /** @type {ol.geom.GeometryType} */ (typeSelect.value)
+            type: /** @type {ol.geom.GeometryType} */ (value)
           });
           map.addInteraction(draw);
         }
       }
 
+      function drawGraph(type) {
+        if(draw !== undefined)
+          map.removeInteraction(draw);
+        addInteraction(type);
+      }
 
-      /**
-       * Handle change event.
-       */
-      typeSelect.onchange = function() {
-        map.removeInteraction(draw);
-        addInteraction();
-      };
+      function drawPoint() {
+        drawGraph("Point");
+      }
 
-      addInteraction();
+      function drawLine() {
+        drawGraph("LineString");
+      }
+
+      function drawPolygon() {
+        drawGraph("Polygon");
+      }
     </script>
   </body>
 </html>
