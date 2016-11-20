@@ -10,9 +10,14 @@
   </head>
   <body>
     <div id="controlPanel" class="controlPanel">
-      <input type="button" value="画点" onclick="drawPoint()"></input>
-      <input type="button" value="画线" onclick="drawLine()"></input>
-      <input type="button" value="画面" onclick="drawPolygon()"></input>
+      <input type="button" value="添加点" onclick="drawPoint()"></input>
+      <input type="button" value="添加线" onclick="drawLine()"></input>
+      <input type="button" value="添加面" onclick="drawPolygon()"></input>
+      <input type="button" value="清除" onclick="clearOverlays()"></input>
+      <br/>
+      <input type="button" value="添加图层" onclick="addLayer()"></input>
+      <input type="button" value="删除图层" onclick="deleteLayer()"></input>
+
     </div>
     <div id="map" class="map"></div>
 
@@ -35,7 +40,7 @@
           zoom: 4
         })
       });
-
+      // map.getLayers().setAt(10, vector);
       var draw; // global so we can remove it later
       function addInteraction(value) {
         if (value !== 'None') {
@@ -63,6 +68,30 @@
 
       function drawPolygon() {
         drawGraph("Polygon");
+      }
+
+      function clearOverlays() {
+        source.clear();
+      }
+
+      var arcgisLayer;
+      function addLayer() {
+        let url = 'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' +
+          'Specialty/ESRI_StateCityHighway_USA/MapServer';
+        arcgisLayer = new ol.layer.Tile({
+          extent: [-13884991, 2870341, -7455066, 6338219],
+          source: new ol.source.TileArcGISRest({
+            url: url
+          })
+        });
+        map.removeLayer(vector);
+        map.addLayer(arcgisLayer);
+        map.addLayer(vector);
+      }
+
+      function deleteLayer() {
+        if(arcgisLayer !== undefined)
+          map.removeLayer(arcgisLayer);
       }
     </script>
   </body>
