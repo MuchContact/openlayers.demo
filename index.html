@@ -17,11 +17,34 @@
       <br/>
       <input type="button" value="添加图层" onclick="addLayer()"></input>
       <input type="button" value="删除图层" onclick="deleteLayer()"></input>
+      <hr/>
+      <textarea id="featureInput" cols="40" rows="20"></textarea><br/>
+      <input type="button" value="添加要素" onclick="addFeature()">
+      </input>
 
     </div>
     <div id="map" class="map"></div>
 
     <script>
+      var content = {
+        'type':'FeatureCollection',
+        'crs':{
+          'type':'name',
+          'properties':{
+            'name':'EPSG:3857'
+          }
+        },
+        'features':[
+          {
+            'type':'Feature',
+            'geometry':{
+              'type':'Point',
+              'coordinates':[-10e6, 5e6]
+            }
+          }
+        ]
+      };
+      document.getElementById('featureInput').value=JSON.stringify(content);
       var raster = new ol.layer.Tile({
         source: new ol.source.OSM()
       });
@@ -92,6 +115,35 @@
       function deleteLayer() {
         if(arcgisLayer !== undefined)
           map.removeLayer(arcgisLayer);
+      }
+
+      var thing = new ol.geom.Polygon( [[
+          ol.proj.transform([-16,-22], 'EPSG:4326', 'EPSG:3857'),
+          ol.proj.transform([-44,-55], 'EPSG:4326', 'EPSG:3857'),
+          ol.proj.transform([-88,75], 'EPSG:4326', 'EPSG:3857')
+      ]]);
+      var featurething = new ol.Feature({
+          name: "Thing",
+          geometry: thing
+      });
+
+      var geojsonFeatures;
+
+      function addFeature() {
+          let geojsonObject = JSON.parse(document.getElementById('featureInput').value);
+          console.log(geojsonObject);
+          var vectorSource = new ol.source.Vector({
+            features: (new ol.format.GeoJSON()).readFeatures(geojsonObject)
+          });
+          // geojsonFeatures = (new ol.format.GeoJSON()).readFeatures(geojsonObject);
+          // source.addFeature(geojsonFeatures);
+          var styleFunction = function(feature, resolution) {
+            return styles[feature.getGeometry().getType()];
+          };
+          var vectorLayer1 = new ol.layer.Vector({
+            source: vectorSource
+          });
+          map.addLayer(vectorLayer1);
       }
     </script>
   </body>
