@@ -12,6 +12,9 @@
     <div id="controlPanel" class="controlPanel">
       <input type="button" value="添加点" onclick="drawPoint()"></input>
       <input type="button" value="添加线" onclick="drawLine()"></input>
+
+      <input type="button" value="添加图标" onclick="drawGraph('Point', 'icon')"></input>
+
       <input type="button" value="添加面" onclick="drawPolygon()"></input>
       <input type="button" value="清除" onclick="clearOverlays()"></input>
       <br/>
@@ -49,10 +52,61 @@
         source: new ol.source.OSM()
       });
 
+      var styles = {
+        'route': new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            width: 6, color: [237, 212, 0, 0.8]
+          })
+        }),
+        'icon': new ol.style.Style({
+          image: new ol.style.Icon({
+            anchor: [0.5, 1],
+            src: 'https://openlayers.org/en/v3.19.1/examples/data/icon.png'
+          })
+        }),
+        'geoMarker': new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 7,
+            snapToPixel: false,
+            fill: new ol.style.Fill({color: 'black'}),
+            stroke: new ol.style.Stroke({
+              color: 'white', width: 2
+            })
+          })
+        })
+      };
+
       var source = new ol.source.Vector({wrapX: false});
+      function getDefaultStyle() {
+        var fill = new ol.style.Fill({
+           color: 'rgba(255,255,255,0.4)'
+         });
+         var stroke = new ol.style.Stroke({
+           color: '#3399CC',
+           width: 1.25
+         });
+         return [
+           new ol.style.Style({
+             image: new ol.style.Circle({
+               fill: fill,
+               stroke: stroke,
+               radius: 5
+             }),
+             fill: fill,
+             stroke: stroke
+           })
+         ];
+      }
 
       var vector = new ol.layer.Vector({
-        source: source
+        source: source,
+        style: function(feature) {
+          // hide geoMarker if animation is active
+          if (styles[feature.get('type')] !== undefined) {
+            return styles[feature.get('type')];
+          }
+          return getDefaultStyle();
+        }
       });
 
       var map = new ol.Map({
@@ -69,16 +123,21 @@
         if (value !== 'None') {
           draw = new ol.interaction.Draw({
             source: source,
-            type: /** @type {ol.geom.GeometryType} */ (value)
+            type: /** @type {ol.geom.GeometryType} */ (value),
           });
           map.addInteraction(draw);
         }
       }
 
-      function drawGraph(type) {
+      function drawGraph(type, subtype) {
         if(draw !== undefined)
           map.removeInteraction(draw);
         addInteraction(type);
+        if(subtype !== undefined){
+          draw.on('drawend', function(e) {
+            e.feature.setStyle(styles[subtype]);
+          });
+        }
       }
 
       function drawPoint() {
