@@ -51,7 +51,20 @@
       var raster = new ol.layer.Tile({
         source: new ol.source.OSM()
       });
-
+      raster = new ol.layer.Tile({
+                source: new ol.source.TileArcGISRest({
+                  extent: [119.50132212696262, 32.048069463279376, 120.15535997726859, 32.353803132949025],
+                  url: 'http://112.25.235.196:6080/arcgis/rest/services/2014%E5%BA%95%E5%9B%BE/MapServer'
+                })
+              });
+      raster = new ol.layer.Image({
+          source: new ol.source.ImageArcGISRest({
+            extent: [119.50132212696262, 32.048069463279376, 120.15535997726859, 32.353803132949025],
+            ratio: 1,
+            params: {},
+            url: 'http://112.25.235.196:6080/arcgis/rest/services/2014%E5%BA%95%E5%9B%BE/MapServer'
+          })
+        });
       var styles = {
         'route': new ol.style.Style({
           stroke: new ol.style.Stroke({
