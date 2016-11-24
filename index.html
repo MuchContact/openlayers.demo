@@ -214,7 +214,7 @@
       var esrijsonFormat = new ol.format.EsriJSON();
       function loadRegion() {
         var coordinate = encodeURIComponent($('#queryCoordinate').val());
-        var url = 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer/1/query?text=&geometry='
+        var url = 'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer/1/query?text=&geometry='
                   +coordinate
                   +'&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelWithin&relationParam=&objectIds=&where=&time=&returnCountOnly=false&returnIdsOnly=false&returnGeometry=true&maxAllowableOffset=&outSR=&outFields=&f=pjson';
         $.ajax({url: url, dataType: 'jsonp', success: function(response) {
