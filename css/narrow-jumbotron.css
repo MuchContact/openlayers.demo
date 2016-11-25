@@ -47,7 +47,8 @@ body {
   border-bottom: .05rem solid #e5e5e5;
   height: 48rem;
 }
-.jumbotron .btn {
+
+.btn {
   padding: .75rem 1.5rem;
   font-size: 1.5rem;
 }
@@ -112,4 +113,8 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
     content: "常用地图操作";
+}
+
+.map {
+  padding: 0 !important;
 }
