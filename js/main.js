@@ -11,7 +11,19 @@ var layers = [
   })
 ];
 
+var mousePositionControl = new ol.control.MousePosition({
+        coordinateFormat: ol.coordinate.createStringXY(4),
+        target: document.getElementById('mouse-position'),
+        className: 'custom-mouse-position',
+        undefinedHTML: '&nbsp;'
+      });
+
 var map = new ol.Map({
+  controls: ol.control.defaults({
+            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+              collapsible: false
+            })
+          }).extend([mousePositionControl]),
   layers: layers,
   target: 'map',
   view: new ol.View({
