@@ -21,3 +21,35 @@ var map = new ol.Map({
     zoom: 11
   })
 });
+
+var esrijsonFormat = new ol.format.EsriJSON();
+
+var queryResultLayerSource = new ol.source.Vector({wrapX: false});
+
+var queryResultLayer = new ol.layer.Vector({
+  source: queryResultLayerSource
+});
+
+map.addLayer(queryResultLayer);
+
+function queryField() {
+  var coordinate = encodeURIComponent($('#queryCoordinate').val());
+  var queryUrl = url + '/3/query?text=&geometry='
+            +coordinate
+            +'&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelWithin&relationParam=&objectIds=&where=&time=&returnCountOnly=false&returnIdsOnly=false&returnGeometry=true&maxAllowableOffset=&outSR=&outFields=TBBH%2CTBMJ%2CQSDWMC&f=pjson';
+  $.ajax({url: queryUrl, dataType: 'jsonp', success: function(response) {
+      if (response.error) {
+        alert(response.error.message + '\n' +
+            response.error.details.join('\n'));
+      } else {
+        // dataProjection will be read from document
+        var features = esrijsonFormat.readFeatures(response, {
+          dataProjection: 'EPSG:4326'
+        });
+        if (features.length > 0) {
+          queryResultLayerSource.clear();
+          queryResultLayerSource.addFeatures(features);
+        }
+      }
+    }});
+}

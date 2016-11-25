@@ -47,10 +47,10 @@
 
       <div class="row marketing">
         <div class="input-group">
-          <input type="text" class="form-control" aria-label="test" placeholder="请输入X,Y坐标查询，如'112.83,23.78'">
+          <input id="queryCoordinate" type="text" class="form-control" aria-label="test" placeholder="请输入X,Y坐标查询，如'112.83,23.78'">
           <div class="input-group-btn">
             <button type="button" class="btn btn-default" aria-label="Help"><span class="glyphicon glyphicon-question-sign"></span></button>
-            <button type="button" class="btn btn-default">查询地块</button>
+            <button type="button" class="btn btn-default" onclick="queryField()">查询地块</button>
           </div>
         </div>
       </div>
