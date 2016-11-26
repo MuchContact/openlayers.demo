@@ -17,6 +17,12 @@ var mousePositionControl = new ol.control.MousePosition({
         className: 'custom-mouse-position',
         undefinedHTML: '&nbsp;'
       });
+var mapView = new ol.View({
+  center: [119.901, 32.248],
+  extent: [119.24147872797174,31.382735359191845,121.02512269794211,32.96650460467248],
+  projection: 'EPSG:4326',
+  zoom: 11
+});
 
 var map = new ol.Map({
   controls: ol.control.defaults({
@@ -26,12 +32,7 @@ var map = new ol.Map({
           }).extend([mousePositionControl]),
   layers: layers,
   target: 'map',
-  view: new ol.View({
-    center: [119.901, 32.248],
-    extent: [119.24147872797174,31.382735359191845,121.02512269794211,32.96650460467248],
-    projection: 'EPSG:4326',
-    zoom: 11
-  })
+  view: mapView
 });
 
 var esrijsonFormat = new ol.format.EsriJSON();
@@ -45,7 +46,8 @@ var queryResultLayer = new ol.layer.Vector({
 map.addLayer(queryResultLayer);
 
 function queryField() {
-  var coordinate = encodeURIComponent($('#queryCoordinate').val());
+  var originCoor = $('#queryCoordinate').val();
+  var coordinate = encodeURIComponent(originCoor);
   var queryUrl = url + '/3/query?text=&geometry='
             +coordinate
             +'&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelWithin&relationParam=&objectIds=&where=&time=&returnCountOnly=false&returnIdsOnly=false&returnGeometry=true&maxAllowableOffset=&outSR=&outFields=TBBH%2CTBMJ%2CQSDWMC&f=pjson';
@@ -54,6 +56,7 @@ function queryField() {
         alert(response.error.message + '\n' +
             response.error.details.join('\n'));
       } else {
+        moveTo(Number(originCoor.split(',')[0]), Number(originCoor.split(',')[1]));
         // dataProjection will be read from document
         var features = esrijsonFormat.readFeatures(response, {
           dataProjection: 'EPSG:4326'
@@ -64,4 +67,14 @@ function queryField() {
         }
       }
     }});
+}
+
+function moveTo(x, y) {
+  var target = [x, y];
+  var pan = ol.animation.pan({
+    duration: 2000,
+    source: /** @type {ol.Coordinate} */ (mapView.getCenter())
+  });
+  map.beforeRender(pan);
+  mapView.setCenter(target);
 }
