@@ -35,6 +35,13 @@ var map = new ol.Map({
   view: mapView
 });
 
+// Popup showing the position the user clicked
+var popup = new ol.Overlay({
+  element: document.getElementById('popup')
+});
+
+map.addOverlay(popup);
+
 var esrijsonFormat = new ol.format.EsriJSON();
 
 var queryResultLayerSource = new ol.source.Vector({wrapX: false});
@@ -56,14 +63,20 @@ function queryField() {
         alert(response.error.message + '\n' +
             response.error.details.join('\n'));
       } else {
-        moveTo(Number(originCoor.split(',')[0]), Number(originCoor.split(',')[1]));
         // dataProjection will be read from document
         var features = esrijsonFormat.readFeatures(response, {
           dataProjection: 'EPSG:4326'
         });
         if (features.length > 0) {
+          var x = Number(originCoor.split(',')[0]);
+          var y = Number(originCoor.split(',')[1]);
+          moveTo(x, y);
+
           queryResultLayerSource.clear();
           queryResultLayerSource.addFeatures(features);
+
+          showPopupInfo(x, y, features);
+          return;
         }
       }
     }});
@@ -77,4 +90,24 @@ function moveTo(x, y) {
   });
   map.beforeRender(pan);
   mapView.setCenter(target);
+  mapView.setZoom(15);
+}
+
+function showPopupInfo(x, y, features) {
+  var id = features[0].T.TBBH;
+  var belongedRegion = features[0].T.QSDWMC;
+  var area = features[0].T.TBMJ;
+
+  var element = popup.getElement();
+
+  $(element).popover('destroy');
+  popup.setPosition([x, y]);
+  // the keys are quoted to prevent renaming in ADVANCED mode.
+  $(element).popover({
+    'placement': 'top',
+    'animation': false,
+    'html': true,
+    'content': '<p>图斑编号：</p><code>' + id + '</code><br/><p>图斑面积：</p><code>' + area + '</code><br/><p>权属单位名称：</p>' + belongedRegion
+  });
+  $(element).popover('show');
 }

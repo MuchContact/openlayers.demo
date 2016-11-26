@@ -108,7 +108,7 @@ body {
     position: absolute;
     top: 15px;
     left: 15px;
-    font-size: 12px;
+    font-size: 1rem;
     font-weight: 700;
     color: #959595;
     text-transform: uppercase;
@@ -118,4 +118,14 @@ body {
 
 .map {
   padding: 0 !important;
+}
+
+.popover-content {
+  min-width: 180px;
+  font-size: 1rem;
+}
+
+.popover-content p{
+  display: inline;
+  font-size: 1rem;
 }
